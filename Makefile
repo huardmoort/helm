@@ -36,7 +36,9 @@ GOFLAGS    := -trimpath
 GOBINFLAGS :=
 
 # Use all available CPUs for tests to speed things up locally
-TEST_FLAGS := -p $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4)
+# Note: capping at 8 to avoid overwhelming my dev machine on larger test runs
+TEST_PARALLELISM := $(shell CPUS=$$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4); echo $$(( CPUS > 8 ? 8 : CPUS )))
+TEST_FLAGS := -p $(TEST_PARALLELISM)
 
 .PHONY: all
 all: build
@@ -89,12 +91,4 @@ build-cross:
 .PHONY: clean
 clean:
 	@echo "Cleaning build artifacts..."
-	rm -rf $(BINDIR) $(DISTDIR)
-
-# Install helm binary to GOPATH/bin
-.PHONY: install
-install: build
-	@echo "Installing helm to GOPATH/bin..."
-	cp $(BINDIR)/$(HELM_BIN) $(GOPATH)/bin/$(HELM_BIN)
-
-# Generate go
+	rm -rf $(BINDIR) $(D
