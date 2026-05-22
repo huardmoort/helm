@@ -35,6 +35,9 @@ LDFLAGS := -w -s \
 GOFLAGS    := -trimpath
 GOBINFLAGS :=
 
+# Use all available CPUs for tests to speed things up locally
+TEST_FLAGS := -p $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4)
+
 .PHONY: all
 all: build
 
@@ -48,12 +51,12 @@ build:
 .PHONY: test
 test: build
 	@echo "Running tests..."
-	$(GO) test $(GOFLAGS) ./...
+	$(GO) test $(GOFLAGS) $(TEST_FLAGS) ./...
 
 # Run tests with race detector
 .PHONY: test-race
 test-race: build
-	$(GO) test -race $(GOFLAGS) ./...
+	$(GO) test -race $(GOFLAGS) $(TEST_FLAGS) ./...
 
 # Run linter
 .PHONY: lint
@@ -94,18 +97,4 @@ install: build
 	@echo "Installing helm to GOPATH/bin..."
 	cp $(BINDIR)/$(HELM_BIN) $(GOPATH)/bin/$(HELM_BIN)
 
-# Generate go code (mocks, etc.)
-.PHONY: generate
-generate:
-	$(GO) generate ./...
-
-# Check for vulnerabilities
-.PHONY: govulncheck
-govulncheck:
-	govulncheck ./...
-
-.PHONY: info
-info:
-	@echo "Version:    $(GIT_VERSION)"
-	@echo "Git Commit: $(GIT_COMMIT)"
-	@echo "Build Date: $(BUILD_DATE)"
+# Generate go
