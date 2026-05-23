@@ -17,6 +17,7 @@ limitations under the License.
 package main // import "helm.sh/helm/v3"
 
 import (
+	"fmt"
 	"os"
 
 	"helm.sh/helm/v3/pkg/cmd"
@@ -24,6 +25,9 @@ import (
 
 func main() {
 	if err := cmd.NewRootCmd(os.Stdout, os.Args[1:]).Execute(); err != nil {
+		// Print the error to stderr before exiting so it's visible even when
+		// stdout is redirected (e.g. piped to a file or another command).
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }
