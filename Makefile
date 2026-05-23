@@ -36,8 +36,8 @@ GOFLAGS    := -trimpath
 GOBINFLAGS :=
 
 # Use all available CPUs for tests to speed things up locally
-# Note: capping at 8 to avoid overwhelming my dev machine on larger test runs
-TEST_PARALLELISM := $(shell CPUS=$$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4); echo $$(( CPUS > 8 ? 8 : CPUS )))
+# Note: capping at 4 instead of 8 - my laptop runs hot with higher parallelism
+TEST_PARALLELISM := $(shell CPUS=$$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4); echo $$(( CPUS > 4 ? 4 : CPUS )))
 TEST_FLAGS := -p $(TEST_PARALLELISM)
 
 .PHONY: all
@@ -85,10 +85,4 @@ build-cross:
 	GOOS=linux   GOARCH=arm64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(DISTDIR)/helm-linux-arm64/helm   ./cmd/helm
 	GOOS=darwin  GOARCH=amd64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(DISTDIR)/helm-darwin-amd64/helm  ./cmd/helm
 	GOOS=darwin  GOARCH=arm64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(DISTDIR)/helm-darwin-arm64/helm  ./cmd/helm
-	GOOS=windows GOARCH=amd64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(DISTDIR)/helm-windows-amd64/helm.exe ./cmd/helm
-
-# Clean build artifacts
-.PHONY: clean
-clean:
-	@echo "Cleaning build artifacts..."
-	rm -rf $(BINDIR) $(D
+	GOOS=windows GOARCH=amd64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAG
