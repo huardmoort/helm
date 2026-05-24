@@ -28,8 +28,11 @@ func main() {
 		// Print the error to stderr before exiting so it's visible even when
 		// stdout is redirected (e.g. piped to a file or another command).
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		// Use exit code 2 to distinguish helm errors from general OS errors
-		// (exit code 1), making it easier to handle in shell scripts.
-		os.Exit(2)
+		// Use exit code 1 for all helm errors to align with standard Unix
+		// conventions where exit code 1 indicates a general error.
+		// Reverted from exit code 2 since most shell scripts check for non-zero
+		// rather than a specific code, and exit code 2 is typically reserved
+		// for misuse of shell builtins.
+		os.Exit(1)
 	}
 }
