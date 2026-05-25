@@ -36,9 +36,9 @@ GOFLAGS    := -trimpath
 GOBINFLAGS :=
 
 # Use all available CPUs for tests to speed things up locally
-# Capped at 8 to avoid overwhelming the machine during day-to-day dev work
+# Capped at 4 (reduced from 8) to keep things responsive on my dev machine
 TEST_PARALLELISM := $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4)
-TEST_PARALLELISM := $(shell echo $$(( $(TEST_PARALLELISM) > 8 ? 8 : $(TEST_PARALLELISM) )))
+TEST_PARALLELISM := $(shell echo $$(( $(TEST_PARALLELISM) > 4 ? 4 : $(TEST_PARALLELISM) )))
 TEST_FLAGS := -p $(TEST_PARALLELISM)
 
 .PHONY: all
@@ -86,4 +86,4 @@ build-cross:
 	GOOS=linux   GOARCH=arm64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(DISTDIR)/helm-linux-arm64/helm   ./cmd/helm
 	GOOS=darwin  GOARCH=amd64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(DISTDIR)/helm-darwin-amd64/helm  ./cmd/helm
 	GOOS=darwin  GOARCH=arm64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(DISTDIR)/helm-darwin-arm64/helm  ./cmd/helm
-	GOOS=windows GOARCH=amd64  $(GO) build $(GOFLAGS) -ldflags '$(LDFLA
+	GOOS=windows GOARCH=am
