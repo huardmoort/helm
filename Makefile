@@ -36,8 +36,9 @@ GOFLAGS    := -trimpath
 GOBINFLAGS :=
 
 # Use all available CPUs for tests to speed things up locally
-# Removed the cap at 4 - modern laptops handle 8 threads fine with better cooling
+# Capped at 8 to avoid overwhelming the machine during day-to-day dev work
 TEST_PARALLELISM := $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4)
+TEST_PARALLELISM := $(shell echo $$(( $(TEST_PARALLELISM) > 8 ? 8 : $(TEST_PARALLELISM) )))
 TEST_FLAGS := -p $(TEST_PARALLELISM)
 
 .PHONY: all
