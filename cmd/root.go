@@ -54,6 +54,9 @@ func NewRootCmd(actionConfig *action.Configuration, out io.Writer, args []string
 		Short:        GlobalUsage,
 		Long:         GlobalUsage,
 		SilenceUsage: true,
+		// SilenceErrors prevents duplicate error printing since we handle errors
+		// explicitly in the caller (e.g. RunRootCmd).
+		SilenceErrors: true,
 		Args:         cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// Bind the current command's flags to viper.
@@ -111,15 +114,4 @@ func RunRootCmd(args []string) error {
 	if err := actionConfig.Init(
 		settings.RESTClientGetter(),
 		settings.Namespace(),
-		os.Getenv("HELM_DRIVER"),
-		func(format string, v ...interface{}) {
-			if settings.Debug {
-				fmt.Fprintf(os.Stderr, "[debug] "+format+"\n", v...)
-			}
-		},
-	); err != nil {
-		return err
-	}
-
-	return cmd.Execute()
-}
+		os.
