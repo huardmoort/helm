@@ -36,9 +36,8 @@ GOFLAGS    := -trimpath
 GOBINFLAGS :=
 
 # Use all available CPUs for tests to speed things up locally
-# Capped at 2 to avoid slowing down my machine during background builds
-TEST_PARALLELISM := $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 2)
-TEST_PARALLELISM := $(shell echo $$(( $(TEST_PARALLELISM) > 2 ? 2 : $(TEST_PARALLELISM) )))
+# Removed the cap of 2 — I have enough cores and want faster local test runs
+TEST_PARALLELISM := $(shell nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || echo 4)
 TEST_FLAGS := -p $(TEST_PARALLELISM)
 
 .PHONY: all
